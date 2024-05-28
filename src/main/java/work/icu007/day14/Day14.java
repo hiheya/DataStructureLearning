@@ -1,6 +1,7 @@
 package work.icu007.day14;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Day14 {
@@ -32,6 +33,60 @@ public class Day14 {
     // 起始索引等于 1 的子串是 "ba", 它是 "ab" 的字母异位词。
     // 起始索引等于 2 的子串是 "ab", 它是 "ab" 的字母异位词。
     // 解法一：滑动窗口
+    public List<Integer> findAnagrams(String s, String p) {
+        // 用于存储结果的列表
+        ArrayList<Integer> ans = new ArrayList<>();
 
+        // 需要的字符及其数量
+        HashMap<Character, Integer> needMap = new HashMap<>();
+        // 窗口中的字符及其数量
+        HashMap<Character, Integer> windowMap = new HashMap<>();
 
+        // 窗口的左右边界
+        int left = 0;
+        int right = 0;
+        // 记录窗口中满足need条件的字符个数
+        int valid = 0;
+
+        // 初始化needMap
+        for (char c : p.toCharArray()) {
+            needMap.put(c, needMap.getOrDefault(c, 0) + 1);
+        }
+
+        // 开始滑动窗口
+        while (right < s.length()) {
+            // c是将移入窗口的字符
+            char c = s.charAt(right);
+            // 右移窗口
+            right++;
+            // 进行窗口内数据的一系列更新
+            if (needMap.containsKey(c)) {
+                windowMap.put(c, windowMap.getOrDefault(c, 0) + 1);
+                if (needMap.get(c).equals(windowMap.get(c))) {
+                    valid++;
+                }
+            }
+
+            // 判断左侧窗口是否要收缩
+            while (right - left >= p.length()) {
+                // 当窗口符合条件时，把起始索引加入res
+                if (valid == needMap.size()) {
+                    ans.add(left);
+                }
+                // d是将移出窗口的字符
+                char d = s.charAt(left);
+                // 左移窗口
+                left++;
+                // 进行窗口内数据的一系列更新
+                if (needMap.containsKey(d)) {
+                    if (windowMap.get(d).equals(needMap.get(d))) {
+                        valid--;
+                    }
+                    windowMap.put(d, windowMap.get(d) - 1);
+                }
+            }
+        }
+        // 返回结果
+        return ans;
+    }
 }
